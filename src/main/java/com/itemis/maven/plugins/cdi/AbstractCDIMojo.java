@@ -259,9 +259,16 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
   // will be called automatically by the CDI container once the bean discovery has finished
   private void processMojoCdiProducerFields(@Observes AfterBeanDiscovery event, BeanManager beanManager)
       throws MojoExecutionException {
-    Set<Field> fields = Sets.newHashSet(getClass().getFields());
-    fields.addAll(Sets.newHashSet(getClass().getDeclaredFields()));
+	  
+	Class<?> cls = getClass();
+    Set<Field> fields = Sets.newHashSet();
 
+    while (cls != AbstractCDIMojo.class) {
+    	fields.addAll(Sets.newHashSet(cls.getFields()));
+    	fields.addAll(Sets.newHashSet(cls.getDeclaredFields()));
+    	cls = cls.getSuperclass();
+    }
+    
     for (Field f : fields) {
       if (f.isAnnotationPresent(MojoProduces.class)) {
         try {
@@ -280,9 +287,15 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
   private void processMojoCdiProducerMethods(@Observes AfterBeanDiscovery event, BeanManager beanManager)
       throws MojoExecutionException {
     // no method parameter injection possible at the moment since the container is not yet initialized at this point!
-    Set<Method> methods = Sets.newHashSet(getClass().getMethods());
-    methods.addAll(Sets.newHashSet(getClass().getDeclaredMethods()));
+    Class<?> cls = getClass();
+    Set<Method> methods = Sets.newHashSet();
 
+    while (cls != AbstractCDIMojo.class) {
+    	methods.addAll(Sets.newHashSet(cls.getMethods()));
+    	methods.addAll(Sets.newHashSet(cls.getDeclaredMethods()));
+    	cls = cls.getSuperclass();
+    }
+    
     for (Method m : methods) {
       if (m.getReturnType() != Void.class && m.isAnnotationPresent(MojoProduces.class)) {
         try {
