@@ -20,6 +20,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
 import org.apache.maven.plugin.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -38,17 +40,17 @@ import com.itemis.maven.plugins.cdi.annotations.RollbackOnError;
  * @since 2.0.0
  */
 public class WorkflowExecutor {
-  private Log log;
+  private static final Logger log = LoggerFactory.getLogger(WorkflowExecutor.class);
+
   private ProcessingWorkflow workflow;
   private Map<String, CDIMojoProcessingStep> processingSteps;
   private Stack<Pair<CDIMojoProcessingStep, ExecutionContext>> executedSteps;
   private PluginParameterExpressionEvaluator expressionEvaluator;
 
-  public WorkflowExecutor(ProcessingWorkflow workflow, Map<String, CDIMojoProcessingStep> processingSteps, Log log,
+  public WorkflowExecutor(ProcessingWorkflow workflow, Map<String, CDIMojoProcessingStep> processingSteps,
       PluginParameterExpressionEvaluator expressionEvaluator) {
     this.workflow = workflow;
     this.processingSteps = processingSteps;
-    this.log = log;
     this.expressionEvaluator = expressionEvaluator;
   }
 

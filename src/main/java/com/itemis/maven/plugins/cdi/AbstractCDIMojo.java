@@ -187,7 +187,7 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
 
       PluginParameterExpressionEvaluator expressionEvaluator = new PluginParameterExpressionEvaluator(this._session,
           this._mojoExecution);
-      WorkflowExecutor executor = new WorkflowExecutor(getWorkflow(), processingSteps, getLog(), expressionEvaluator);
+      WorkflowExecutor executor = new WorkflowExecutor(getWorkflow(), processingSteps, expressionEvaluator);
       executor.validate(!this._settings.isOffline());
       executor.execute();
     } finally {
