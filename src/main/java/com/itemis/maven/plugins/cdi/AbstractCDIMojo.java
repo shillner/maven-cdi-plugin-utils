@@ -14,7 +14,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.inject.Named;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -49,7 +48,6 @@ import com.itemis.maven.plugins.cdi.internal.util.workflow.ProcessingWorkflow;
 import com.itemis.maven.plugins.cdi.internal.util.workflow.WorkflowExecutor;
 import com.itemis.maven.plugins.cdi.internal.util.workflow.WorkflowUtil;
 import com.itemis.maven.plugins.cdi.internal.util.workflow.WorkflowValidator;
-import com.itemis.maven.plugins.cdi.logging.MavenLogWrapper;
 
 /**
  * An abstract Mojo that enables CDI-based dependency injection for the current maven plugin.<br>
@@ -155,29 +153,14 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
   @Parameter(property = "workflow")
   private File workflowDescriptor;
 
-  @Parameter(defaultValue = "true", property = "enableLogTimestamps")
-  @MojoProduces
-  @Named("enableLogTimestamps")
-  private boolean enableLogTimestamps;
-
   private ProcessingWorkflow workflow;
 
   private Map<String, ProcessingStep> allAvailableProcessingSteps = Maps.newHashMap();
 
-  @MojoProduces
-  public final MavenLogWrapper createLogWrapper() {
-    MavenLogWrapper log = new MavenLogWrapper(getLog());
-    if (this.enableLogTimestamps) {
-      log.enableLogTimestamps();
-    }
-    return log;
-  }
-
   @Override
   public final void execute() throws MojoExecutionException, MojoFailureException {
     if (System.getProperty(SYSPROP_PRINT_WF) != null) {
-      WorkflowUtil.printWorkflow(getGoalName(), getPluginDescriptor(), Optional.fromNullable(this.workflowDescriptor),
-          createLogWrapper());
+      WorkflowUtil.printWorkflow(getGoalName(), getPluginDescriptor(), Optional.fromNullable(this.workflowDescriptor));
       return;
     }
 
@@ -195,7 +178,7 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
     try {
       weldContainer = weld.initialize();
       if (System.getProperty(SYSPROP_PRINT_STEPS) != null) {
-        WorkflowUtil.printAvailableSteps(this.allAvailableProcessingSteps, createLogWrapper());
+        WorkflowUtil.printAvailableSteps(this.allAvailableProcessingSteps);
         return;
       }
 
@@ -217,7 +200,7 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
   private ProcessingWorkflow getWorkflow() throws MojoExecutionException, MojoFailureException {
     if (this.workflow == null) {
       InputStream wfDescriptor = WorkflowUtil.getWorkflowDescriptor(getGoalName(), getPluginDescriptor(),
-          Optional.fromNullable(this.workflowDescriptor), createLogWrapper());
+          Optional.fromNullable(this.workflowDescriptor));
 
       try {
         WorkflowValidator.validateSyntactically(wfDescriptor);
@@ -226,7 +209,7 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
       }
 
       wfDescriptor = WorkflowUtil.getWorkflowDescriptor(getGoalName(), getPluginDescriptor(),
-          Optional.fromNullable(this.workflowDescriptor), createLogWrapper());
+          Optional.fromNullable(this.workflowDescriptor));
       this.workflow = WorkflowUtil.parseWorkflow(wfDescriptor, getGoalName());
     }
     return this.workflow;

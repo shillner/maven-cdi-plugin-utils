@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -25,7 +27,6 @@ import com.google.common.io.Closeables;
 import com.itemis.maven.plugins.cdi.ExecutionContext;
 import com.itemis.maven.plugins.cdi.annotations.ProcessingStep;
 import com.itemis.maven.plugins.cdi.internal.util.workflow.ParallelWorkflowStep.Builder;
-import com.itemis.maven.plugins.cdi.logging.Logger;
 
 import de.vandermeer.asciitable.v2.RenderedTable;
 import de.vandermeer.asciitable.v2.V2_AsciiTable;
@@ -45,6 +46,8 @@ public class WorkflowUtil {
   public static final String CONTEXT_DATA_MAP_ASSIGNMENT = "=>";
   public static final String CONTEXT_DATA_SEPARATOR = ",";
   private static final String DEFAULT_WORKFLOW_DIR = "META-INF/workflows";
+
+  private static final Logger log = LoggerFactory.getLogger(WorkflowUtil.class);
 
   /**
    * Parses a workflow from its descriptor representation.
@@ -230,7 +233,7 @@ public class WorkflowUtil {
   }
 
   public static InputStream getWorkflowDescriptor(String goalName, PluginDescriptor pluginDescriptor,
-      Optional<File> customWorkflowDescriptor, Logger log) throws MojoExecutionException {
+      Optional<File> customWorkflowDescriptor) throws MojoExecutionException {
     log.info("Constructing workflow for processing");
     String goalPrefix = pluginDescriptor.getGoalPrefix();
 
@@ -256,8 +259,8 @@ public class WorkflowUtil {
     return Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_WORKFLOW_DIR + "/" + goalName);
   }
 
-  public static void printWorkflow(String goalName, PluginDescriptor pluginDescriptor,
-      Optional<File> customWorkflowDescriptor, Logger log) throws MojoExecutionException {
+  public static void printWorkflow(
+      String goalName, PluginDescriptor pluginDescriptor, Optional<File> customWorkflowDescriptor) throws MojoExecutionException {
     StringBuilder sb = new StringBuilder();
     if (StringUtils.isNotBlank(pluginDescriptor.getGoalPrefix())) {
       sb.append(pluginDescriptor.getGoalPrefix());
@@ -269,7 +272,7 @@ public class WorkflowUtil {
 
     log.info("Default workflow for '" + sb + "':");
 
-    InputStream workflowDescriptor = getWorkflowDescriptor(goalName, pluginDescriptor, customWorkflowDescriptor, log);
+    InputStream workflowDescriptor = getWorkflowDescriptor(goalName, pluginDescriptor, customWorkflowDescriptor);
     try {
       int x = 77 - goalName.length();
       int a = x / 2;
@@ -287,7 +290,7 @@ public class WorkflowUtil {
     }
   }
 
-  public static boolean printAvailableSteps(Map<String, ProcessingStep> steps, Logger log)
+  public static boolean printAvailableSteps(Map<String, ProcessingStep> steps)
       throws MojoExecutionException {
     V2_AsciiTable table = new V2_AsciiTable();
     table.addRule();
