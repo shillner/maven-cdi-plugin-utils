@@ -239,12 +239,12 @@ public class WorkflowUtil {
 
     if (customWorkflowDescriptor.isPresent()) {
       File customDescriptor = customWorkflowDescriptor.get();
-      log.debug("Requested overriding of workflow with file: " + customDescriptor.getAbsolutePath());
+      log.debug("Requested overriding of workflow with file: {}", customDescriptor.getAbsolutePath());
 
       if (customDescriptor.exists() && customDescriptor.isFile()) {
         try {
-          log.info("Workflow of goal '" + goalPrefix + ':' + goalName + "' will be overriden by file '"
-              + customDescriptor.getAbsolutePath() + "'.");
+          log.info("Workflow of goal '{}:{}' will be overriden by file '{}'.", goalPrefix, goalName,
+              customDescriptor.getAbsolutePath());
           return new FileInputStream(customDescriptor);
         } catch (Exception e) {
           throw new MojoExecutionException("Unable to load custom workflow for goal " + goalName, e);
@@ -255,7 +255,7 @@ public class WorkflowUtil {
       }
     }
 
-    log.info("Goal '" + goalPrefix + ':' + goalName + "' will use default workflow packaged with the plugin.");
+    log.info("Goal '{}:{}' will use default workflow packaged with the plugin.", goalPrefix, goalName);
     return Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_WORKFLOW_DIR + "/" + goalName);
   }
 
@@ -270,7 +270,7 @@ public class WorkflowUtil {
     }
     sb.append(':').append(goalName);
 
-    log.info("Default workflow for '" + sb + "':");
+    log.info("Default workflow for '{}':", sb);
 
     InputStream workflowDescriptor = getWorkflowDescriptor(goalName, pluginDescriptor, customWorkflowDescriptor);
     try {
