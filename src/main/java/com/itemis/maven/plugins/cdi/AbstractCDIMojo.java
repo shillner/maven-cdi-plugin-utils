@@ -182,11 +182,9 @@ public class AbstractCDIMojo extends AbstractMojo implements Extension {
     }
 
     System.setProperty("org.jboss.logging.provider", "slf4j");
-    String logLevel = "info";
     if (getLog().isDebugEnabled()) {
-      logLevel = "debug";
+      System.setProperty("org.slf4j.simpleLogger.log.org.jboss.weld", "debug");
     }
-    System.setProperty("org.slf4j.simpleLogger.log.org.jboss.weld", logLevel);
 
     Weld weld = new Weld();
     weld.addExtension(this);
