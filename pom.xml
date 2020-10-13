@@ -48,7 +48,7 @@
     <version.guava>19.0</version.guava>
     <version.java>1.7</version.java>
     <version.javax.inject>1</version.javax.inject>
-    <version.junit>4.12</version.junit>
+    <version.junit>4.13.1</version.junit>
     <version.junit-dataprovider>1.10.3</version.junit-dataprovider>
     <version.maven>3.2.1</version.maven>
     <version.maven-plugin-plugin>3.4</version.maven-plugin-plugin>
